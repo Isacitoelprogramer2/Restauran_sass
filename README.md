@@ -1,2 +1,4 @@
+
 # Restauran_sass
-esta es una herramienta para calcular los costos y proyectar el flujo de caja para un restaurante
+
+Restauran_sass es una solución profesional diseñada para calcular los costos operativos y proyectar el flujo de caja en restaurantes. Esta herramienta permite a propietarios y administradores tomar decisiones informadas, optimizar recursos y mejorar la rentabilidad de su negocio gastronómico.
