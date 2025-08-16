@@ -9,7 +9,10 @@
         "**/node_modules/**"
       ],
       "rewrites": [
-        { "source": "**", "destination": "/index.html" }
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
       ]
     },
     {
@@ -21,8 +24,17 @@
         "**/node_modules/**"
       ],
       "rewrites": [
-        { "source": "**", "destination": "/index.html" }
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
       ]
     }
-  ]
+  ],
+  "firestore": {
+    "database": "staging-database",
+    "location": "southamerica-west1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
 }

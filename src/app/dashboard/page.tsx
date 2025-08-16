@@ -1,3 +1,5 @@
+"use client";
+
 import { AppSidebar } from "@/components/app-sidebar"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { DataTable } from "@/components/data-table"
@@ -8,19 +10,54 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
-import data from "./data.json"
-
+import { getDocuments } from "@/lib/firebase/firestore";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 export default function Page() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [userData, setUserData] = useState<any[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user) {
+        setDataLoading(true);
+        const allDocs = await getDocuments("dashboardData"); // Cambia "dashboardData" por el nombre de tu colección
+        setUserData(allDocs.filter((doc: any) => doc.uid === user.uid));
+        setDataLoading(false);
+      }
+    };
+    fetchData();
+  }, [user]);
+
+  if (loading || dataLoading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
+      style={{
+        "--sidebar-width": "calc(var(--spacing) * 72)",
+        "--header-height": "calc(var(--spacing) * 12)",
+      } as React.CSSProperties}
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar variant="inset" user={{
+        name: user?.displayName || "Usuario",
+        email: user?.email || "",
+        avatar: user?.photoURL || "/avatars/default.svg"
+      }} />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col bg-black text-white min-h-screen">
@@ -30,11 +67,11 @@ export default function Page() {
               <div className="px-4 lg:px-6">
                 <ChartAreaInteractive />
               </div>
-              <DataTable data={data} />
+              <DataTable data={userData} />
             </div>
           </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

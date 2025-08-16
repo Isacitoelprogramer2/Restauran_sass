@@ -20,20 +20,15 @@ import {
 } from "@/components/ui/sidebar"
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Recetas",
-      url: "#",
+      url: "/dashboard/recetas",
       icon: IconClipboardList,
     },
     {
       title: "Proyecciones",
-      url: "#",
+      url: "/dashboard/proyecciones",
       icon: IconTrendingUp,
     },
   ],
@@ -41,15 +36,25 @@ const data = {
   navSecondary: [],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
+  user: {
+    name: string
+    email: string
+    avatar: string
+  }
+}) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <div className="bg-black text-white h-full flex flex-col">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
+                tooltip="Acme Inc."
                 className="data-[slot=sidebar-menu-button]:!p-1.5"
               >
                 <a href="#">
@@ -65,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavSecondary items={data.navSecondary} className="mt-auto" />
         </SidebarContent>
         <SidebarFooter>
-          <NavUser user={data.user} />
+          <NavUser user={user} />
         </SidebarFooter>
       </div>
     </Sidebar>

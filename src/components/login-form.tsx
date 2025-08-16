@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export function LoginForm({
   className,
@@ -24,6 +25,7 @@ export function LoginForm({
     contraseña: "",
     repetirContraseña: ""
   })
+    const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target
@@ -33,19 +35,56 @@ export function LoginForm({
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+    setLoading(true)
     if (isLogin) {
-      // Handle login logic
-      console.log("Login with:", formData.correo, formData.contraseña)
+      try {
+        const { login } = await import("@/lib/firebase/auth")
+        await login(formData.correo, formData.contraseña)
+          router.push("/dashboard")
+      } catch (err: any) {
+        setError(err.message || "Error al iniciar sesión")
+      }
     } else {
-      // Handle registration logic
       if (formData.contraseña !== formData.repetirContraseña) {
-        alert("Las contraseñas no coinciden")
+        setError("Las contraseñas no coinciden")
+        setLoading(false)
         return
       }
-      console.log("Register with:", formData)
+      try {
+        const { register } = await import("@/lib/firebase/auth")
+        const user = await register(formData.correo, formData.contraseña)
+        const { createDocument } = await import("@/lib/firebase/firestore")
+        await createDocument("users", {
+          uid: user.uid,
+          name: formData.nombres,
+          email: formData.correo,
+          provider: "email"
+        })
+          router.push("/dashboard")
+      } catch (err: any) {
+        setError(err.message || "Error al registrar usuario")
+      }
     }
+    setLoading(false)
+  }
+
+  const handleGoogle = async () => {
+    setError(null)
+    setLoading(true)
+    try {
+      const { loginWithGoogle } = await import("@/lib/firebase/auth")
+      await loginWithGoogle()
+        router.push("/dashboard")
+    } catch (err: any) {
+      setError(err.message || "Error con Google")
+    }
+    setLoading(false)
   }
 
   return (
@@ -65,29 +104,21 @@ export function LoginForm({
           <form onSubmit={handleSubmit}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
-                {!isLogin && (
-                  <Button variant="outline" className="w-full bg-neutral-700 border-neutral-600 text-white hover:bg-neutral-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 mr-2">
-                      <path
-                        d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    Regístrate con Google
-                  </Button>
-                )}
-                
-                {isLogin && (
-                  <Button variant="outline" className="w-full bg-neutral-700 border-neutral-600 text-white hover:bg-neutral-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 mr-2">
-                      <path
-                        d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    Iniciar sesión con Google
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  className="w-full bg-neutral-700 border-neutral-600 text-white hover:bg-neutral-300"
+                  type="button"
+                  onClick={handleGoogle}
+                  disabled={loading}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 mr-2">
+                    <path
+                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  {isLogin ? "Iniciar sesión con Google" : "Regístrate con Google"}
+                </Button>
               </div>
               
               <div className="after:border-neutral-600 relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -97,6 +128,9 @@ export function LoginForm({
               </div>
               
               <div className="grid gap-6">
+                {error && (
+                  <div className="text-red-400 text-sm text-center">{error}</div>
+                )}
                 {!isLogin && (
                   <div className="grid gap-3">
                     <Label htmlFor="nombres" className="text-white">Nombres</Label>
@@ -167,8 +201,9 @@ export function LoginForm({
                 <Button
                   type="submit"
                   className="w-full bg-neutral-100 hover:bg-neutral-600 text-black"
+                  disabled={loading}
                 >
-                  {isLogin ? "Iniciar sesión" : "Registrarse"}
+                  {loading ? (isLogin ? "Iniciando..." : "Registrando...") : (isLogin ? "Iniciar sesión" : "Registrarse")}
                 </Button>
               </div>
               
