@@ -32,10 +32,7 @@ export function BreadcrumbNavigation() {
     }
   ]
 
-  // Find current breadcrumb based on path
-  const currentBreadcrumb = breadcrumbs.find(breadcrumb =>
-    pathname === breadcrumb.href
-  ) || { label: "Dashboard" }
+
 
   return (
     <Breadcrumb>

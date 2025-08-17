@@ -47,8 +47,8 @@ export function LoginForm({
         const { login } = await import("@/lib/firebase/auth")
         await login(formData.correo, formData.contraseña)
           router.push("/dashboard")
-      } catch (err: any) {
-        setError(err.message || "Error al iniciar sesión")
+      } catch (err: unknown) {
+        setError((err as Error).message || "Error al iniciar sesión")
       }
     } else {
       if (formData.contraseña !== formData.repetirContraseña) {
@@ -67,8 +67,8 @@ export function LoginForm({
           provider: "email"
         })
           router.push("/dashboard")
-      } catch (err: any) {
-        setError(err.message || "Error al registrar usuario")
+      } catch (err: unknown) {
+        setError((err as Error).message || "Error al registrar usuario")
       }
     }
     setLoading(false)
@@ -81,8 +81,8 @@ export function LoginForm({
       const { loginWithGoogle } = await import("@/lib/firebase/auth")
       await loginWithGoogle()
         router.push("/dashboard")
-    } catch (err: any) {
-      setError(err.message || "Error con Google")
+    } catch (err: unknown) {
+      setError((err as Error).message || "Error con Google")
     }
     setLoading(false)
   }

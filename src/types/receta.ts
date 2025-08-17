@@ -1,4 +1,4 @@
-import { Ingrediente } from "./ingrediente";
+
 
 export interface RecetaIngrediente {
   ingrediente_id: string; // Referencia al ingrediente

@@ -18,7 +18,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -150,7 +149,7 @@ export default function RecetasPage() {
             <DialogHeader>
               <DialogTitle>¿Eliminar receta?</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro que deseas eliminar la receta "{recetaToDelete?.nombre}"? 
+                ¿Estás seguro que deseas eliminar la receta &quot;{recetaToDelete?.nombre}&quot;? 
                 Esta acción no se puede deshacer.
               </DialogDescription>
             </DialogHeader>

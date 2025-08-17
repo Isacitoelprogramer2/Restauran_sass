@@ -170,7 +170,7 @@ export const SelectIngredientDialog: React.FC<SelectIngredientDialogProps> = ({
             <DialogTitle>Confirmar eliminación</DialogTitle>
           </DialogHeader>
           <p className="text-gray-600">
-            ¿Estás seguro de que deseas eliminar el ingrediente "{ingredientToDelete?.nombre}"? 
+            ¿Estás seguro de que deseas eliminar el ingrediente &quot;{ingredientToDelete?.nombre}&quot;? 
             Esta acción no se puede deshacer.
           </p>
           <DialogFooter className="flex gap-2">

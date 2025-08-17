@@ -26,13 +26,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Edit, Trash2, Pen, Save } from "lucide-react";
+import { PlusCircle, Trash2, Pen, Save } from "lucide-react";
 import { MarginDialog } from "@/components/dashboard/margin-dialog";
 import { AddIngredientDialog } from "@/components/dashboard/add-ingredient-dialog";
 import { SelectIngredientDialog } from "@/components/dashboard/select-ingredient-dialog";
 import { updateReceta } from "@/lib/firebase/firestore";
 import { createReceta } from "@/lib/firebase/firestore";
 import { useRouter } from "next/navigation";
+import type { Ingrediente } from "@/types/ingrediente";
 
 export default function NuevaRecetaPage() {
   // Estado para el dialog de margen
@@ -58,7 +59,7 @@ export default function NuevaRecetaPage() {
   // Contador para forzar el refresco del SelectIngredientDialog
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   // Estado para editar ingrediente
-  const [editingIngredient, setEditingIngredient] = useState<any>(null);
+  const [editingIngredient, setEditingIngredient] = useState<Ingrediente | null>(null);
 
   // Calcular precios dinámicamente según ingredientes y margen
   const calculatePricing = (customMargin?: number) => {
@@ -79,12 +80,7 @@ export default function NuevaRecetaPage() {
   // Usar margen guardado para mostrar en la interfaz
   const pricingData = calculatePricing(marginPercent);
 
-  const handleAddIngredient = () => {
-    setIngredients([
-      ...ingredients,
-      { id: Date.now(), name: "", quantity: 0, unit: "kg", cost: 0, unitPrice: 0 },
-    ]);
-  };
+
 
   const handleRemoveIngredient = (id: number) => {
     setIngredients(ingredients.filter((ingredient) => ingredient.id !== id));
@@ -185,7 +181,7 @@ export default function NuevaRecetaPage() {
     setRefreshTrigger(prev => prev + 1);
   };
 
-  const handleEditIngredient = (ingredient: any) => {
+  const handleEditIngredient = (ingredient: Ingrediente) => {
     setEditingIngredient(ingredient);
     setOpenAddIngredientDialog(true);
   };

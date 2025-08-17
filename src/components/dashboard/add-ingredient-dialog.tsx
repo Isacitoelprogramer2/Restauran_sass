@@ -69,8 +69,8 @@ export const AddIngredientDialog: React.FC<AddIngredientDialogProps> = ({
     setSaving(true);
     
     try {
-      // Calcular el precio unitario
-      const unitPrice = quantity > 0 ? totalPrice / quantity : 0;
+      // Calcular el precio unitario (calculamos pero no se usa directamente)
+      const _unitPrice = quantity > 0 ? totalPrice / quantity : 0;
       
       // Calcular el costo por gramo para guardar en Firestore
       const costPerGram = quantity > 0 ? (totalPrice / (unit === "kg" ? quantity * 1000 : unit === "g" ? quantity : unit === "l" ? quantity * 1000 : unit === "ml" ? quantity : quantity)) : 0;

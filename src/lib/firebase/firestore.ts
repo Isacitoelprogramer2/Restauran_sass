@@ -2,7 +2,7 @@ import { db } from "./config";
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import type { Receta } from "@/types/receta";
 
-export const createDocument = async (collectionName: string, data: any) => {
+export const createDocument = async (collectionName: string, data: Record<string, unknown>) => {
   const colRef = collection(db, collectionName);
   const docRef = await addDoc(colRef, data);
   return docRef.id;
@@ -14,7 +14,7 @@ export const getDocuments = async (collectionName: string) => {
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-export const updateDocument = async (collectionName: string, id: string, data: any) => {
+export const updateDocument = async (collectionName: string, id: string, data: Record<string, unknown>) => {
   const docRef = doc(db, collectionName, id);
   await updateDoc(docRef, data);
 };
